@@ -1,0 +1,24 @@
+{
+  "name": "tool-browser-automation-scripts",
+  "version": "0.1.0",
+  "description": "Chrome profile launcher, cookie decryption, and CLI",
+  "main": "dist/core/launcher/index.js",
+  "types": "dist/core/launcher/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "vitest": "^1.6.0",
+    "@types/better-sqlite3": "^7.6.0",
+    "@types/node": "^20.0.0"
+  },
+  "optionalDependencies": {
+    "better-sqlite3": "^11.0.0"
+  }
+}

@@ -1,0 +1,4 @@
+node_modules/
+dist/
+*.tsbuildinfo
+.claude-output.txt

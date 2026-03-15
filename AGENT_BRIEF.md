@@ -1,4 +1,4 @@
-agentB-cookie-decrypt — Sprint 1
+agentC-cli-integration — Sprint 1
 
 Sprint-Level Context
 
@@ -17,18 +17,20 @@ Constraints
 
 
 Objective
-- Build Chrome cookie decryption module for macOS using native Node.js crypto
+- Wire modules into CLI and library exports
 
 Tasks
-- Create `src/core/cookies/decrypt-macos.ts` with `getChromeSafeStorageKey()` calling macOS `security` CLI, `deriveKey()` using PBKDF2 (salt="saltysalt", iterations=1003, dklen=16), and `decryptCookieValue(encryptedBuffer)` using AES-128-CBC
-- Create `src/core/cookies/db.ts` with `getCookieDbPath(profile)` and `readCookieRows(dbPath, domain)` using `better-sqlite3` — copies DB to temp to avoid Chrome lock, cleans up after
-- Create `src/core/cookies/index.ts` with `getCookies(profileName, domain, options?)` as the public API combining db read + decryption
-- Add tests in `tests/cookies.test.ts` with fixture SQLite DB containing known encrypted values
-- Create `tests/create-fixture.ts` to generate test fixture DB
+- Create `src/index.ts` re-exporting `getCookies`, `listProfiles`, `launchProfile` as public library API
+- Create `src/cli/bas.ts` using Commander.js with three commands: `profiles` (list Chrome profiles), `cookies <domain>` (decrypt and display cookies with `--profile` and `--format json|table` options), `launch <profile>` (open Chrome with profile)
+- Create `bin/bas` as CLI entry point
+- Add `"bin"`, `"main"`, `"exports"` fields to `package.json`
+- Add integration tests in `tests/integration.test.ts` testing the public API imports
+- Create `README.md` with installation and usage for CLI and library
 
 Acceptance Criteria
-- `getCookies('Default', 'example.com')` returns decrypted cookie name/value pairs
-- Handles v10 prefix correctly (strips 3-byte prefix before AES-CBC)
-- Copies cookie DB to temp location and cleans up
-- Gracefully degrades when Keychain is inaccessible (returns `<encrypted>` placeholder)
+- `bas profiles` lists available Chrome profiles
+- `bas cookies rippling.com` prints decrypted cookies in table format
+- `bas cookies rippling.com --format json` outputs JSON
+- `bas launch Default` opens Chrome with Default profile
+- `import { getCookies, listProfiles } from './src'` works
 - All tests pass

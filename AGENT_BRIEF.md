@@ -1,4 +1,4 @@
-agentA-chrome-launcher — Sprint 1
+agentB-cookie-decrypt — Sprint 1
 
 Sprint-Level Context
 
@@ -17,17 +17,18 @@ Constraints
 
 
 Objective
-- Build Chrome profile discovery and launch module
+- Build Chrome cookie decryption module for macOS using native Node.js crypto
 
 Tasks
-- Create `src/core/config.ts` with Chrome paths per-platform (macOS default, extensible)
-- Create `src/core/launcher/paths.ts` with `getChromePath()` and `getUserDataDir()` for macOS
-- Create `src/core/launcher/index.ts` with `listProfiles()` returning profile names and `launchProfile(name)` spawning Chrome
-- Add `tsconfig.json` and `package.json` with TypeScript, `better-sqlite3`, build scripts
-- Add tests in `tests/launcher.test.ts` for profile discovery and path resolution
+- Create `src/core/cookies/decrypt-macos.ts` with `getChromeSafeStorageKey()` calling macOS `security` CLI, `deriveKey()` using PBKDF2 (salt="saltysalt", iterations=1003, dklen=16), and `decryptCookieValue(encryptedBuffer)` using AES-128-CBC
+- Create `src/core/cookies/db.ts` with `getCookieDbPath(profile)` and `readCookieRows(dbPath, domain)` using `better-sqlite3` — copies DB to temp to avoid Chrome lock, cleans up after
+- Create `src/core/cookies/index.ts` with `getCookies(profileName, domain, options?)` as the public API combining db read + decryption
+- Add tests in `tests/cookies.test.ts` with fixture SQLite DB containing known encrypted values
+- Create `tests/create-fixture.ts` to generate test fixture DB
 
 Acceptance Criteria
-- `listProfiles()` returns array of Chrome profile names found on disk
-- `launchProfile('Default')` spawns Chrome with the correct `--user-data-dir` and `--profile-directory`
-- Config module correctly resolves macOS Chrome paths
+- `getCookies('Default', 'example.com')` returns decrypted cookie name/value pairs
+- Handles v10 prefix correctly (strips 3-byte prefix before AES-CBC)
+- Copies cookie DB to temp location and cleans up
+- Gracefully degrades when Keychain is inaccessible (returns `<encrypted>` placeholder)
 - All tests pass
